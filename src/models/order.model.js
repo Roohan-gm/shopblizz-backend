@@ -1,10 +1,11 @@
 import { Schema, model } from "mongoose";
 import ApiError from "../utils/ApiError";
+import crypto from "crypto";
 
-const SHIPPING_RATES = {
+const SHIPPING_RATES = Object.freeze({
   fast: 200,
   standard: 100,
-};
+});
 
 // Order Item Subdocument
 const orderItemSchema = new Schema({
@@ -36,10 +37,7 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: {
-        values: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
-        message: "{VALUE} is not a valid order status",
-      },
+      enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
       index: true,
     },
@@ -54,11 +52,13 @@ const orderSchema = new Schema(
       required: [true, "Email is required"],
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email format"],
+      index: true,
     },
     phone: {
       type: String,
       required: [true, "Phone number is required"],
       trim: true,
+      match: [/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"],
     },
     address: {
       type: String,
@@ -69,10 +69,7 @@ const orderSchema = new Schema(
     // Payment: COD only
     paymentMethod: {
       type: String,
-      enum: {
-        values: ["cash_on_delivery"],
-        message: "Only cash on delivery is supported",
-      },
+      enum: ["cash_on_delivery"],
       default: "cash_on_delivery",
       required: true,
     },
@@ -98,10 +95,7 @@ const orderSchema = new Schema(
     },
     shippingMethod: {
       type: String,
-      enum: {
-        values: ["standard", "fast"],
-        message: "{VALUE} is not a supported shipping method",
-      },
+      enum: ["standard", "fast"],
       required: [true, "Shipping method is required"],
     },
     shippingCost: {
@@ -118,33 +112,54 @@ const orderSchema = new Schema(
   }
 );
 
-// Auto-generate order number before save (only if new)
+// Pre-save middleware
 orderSchema.pre("save", async function (next) {
   if (this.isNew) {
-    // ORD-YYYYMMDD-RANDOM6
+    // Generate unique order number (with collision check)
     const prefix = "ORD";
-    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // e.g., 20240515
-    const randomPart = Math.random()
-      .toString(36)
-      .substring(2, 8)
-      .toUpperCase()
-      .padEnd(6, "X");
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const randomPart = crypto.randomBytes(4).toString("hex").toUpperCase();
     this.orderNo = `${prefix}-${datePart}-${randomPart}`;
-  }
-  const rate = SHIPPING_RATES[this.shippingMethod];
-  if (rate === undefined) {
-    return next(new Error(`Invalid shipping method: ${this.shippingMethod}`));
-  }
-  this.shippingCost = rate;
 
-  // Recalculate total amount
-  const itemsTotal = (this.totalAmount = this.orderItems.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
-    0
-  ));
-  this.totalAmount = itemsTotal + this.shippingCost;
+    const rate = SHIPPING_RATES[this.shippingMethod];
+    if (rate === undefined) {
+      return next(
+        new ApiError(400, `Invalid shipping method: ${this.shippingMethod}`)
+      );
+    }
+    this.shippingCost = rate;
 
+    // calculate total amount
+    const itemsTotal = this.orderItems.reduce(
+      (sum, item) => sum + item.unitPrice * item.quantity,
+      0
+    );
+    this.totalAmount = itemsTotal + this.shippingCost;
+  } else if (this.isModified("totalAmount")) {
+    return next(new ApiError(400, "totalAmount is read-only after creation"));
+  }
   next();
 });
+
+// Indexes
+orderSchema.index({ email: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ orderNo: 1 });
+
+orderSchema.statics.populateOrderDetails = function (query = {}) {
+  return this.find(query).populate({
+    path: "orderItems.product",
+    select: "productName price image category isAvailable",
+  });
+};
+
+orderSchema.statics.populateOrderById = function (id) {
+  return this.findById(id)
+    .orFail(new ApiError(404, "Order not found."))
+    .populate({
+      path: "orderItems.product",
+      select: "productName price image category isAvailable",
+    });
+};
 
 export const Order = model("Order", orderSchema);
