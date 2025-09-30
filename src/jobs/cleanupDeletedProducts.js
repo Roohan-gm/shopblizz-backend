@@ -1,4 +1,4 @@
-import { Product } from "../model/product.model";
+import { Product } from "../models/product.model.js";
 import { deleteFromCloudinary } from "../utils/cloudinary.js";
 
 export const cleanupDeleteProduct = async () => {

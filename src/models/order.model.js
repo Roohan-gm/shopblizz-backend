@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import ApiError from "../utils/ApiError";
+import ApiError from "../utils/ApiError.js";
 import crypto from "crypto";
 
 const SHIPPING_RATES = Object.freeze({
@@ -144,7 +144,6 @@ orderSchema.pre("save", async function (next) {
 // Indexes
 orderSchema.index({ email: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
-orderSchema.index({ orderNo: 1 });
 
 orderSchema.statics.populateOrderDetails = function (query = {}) {
   return this.find(query).populate({

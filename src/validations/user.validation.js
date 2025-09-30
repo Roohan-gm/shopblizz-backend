@@ -23,18 +23,18 @@ const usernameSchema = z
     "Username can only contain letters, numbers, and underscores"
   );
 
-export const registerUser = z.object({
+export const registerUserSchema = z.object({
   username: usernameSchema,
   email: emailSchema,
   password: passwordSchema,
   role: roleSchema.default("user"),
 });
 
-export const loginUser = z
+export const loginUserSchema = z
   .object({
     email: emailSchema.optional(),
     username: usernameSchema.optional(),
-    password: passwordSchema.string(1, "password is required"),
+    password: passwordSchema
   })
   .refine((data) => data.email || data.username, {
     message: "Either email or username must be provided",

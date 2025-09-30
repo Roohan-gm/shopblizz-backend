@@ -4,7 +4,7 @@ import {
   deleteFromCloudinary,
   uploadOnCloudinary,
 } from "../utils/cloudinary.js";
-import { Product } from "../model/product.model.js";
+import { Product } from "../models/product.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import {

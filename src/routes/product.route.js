@@ -14,6 +14,7 @@ import {
   updateProductImage,
   updateStock,
 } from "../controllers/product.controller.js";
+
 const router = Router();
 
 //public routes

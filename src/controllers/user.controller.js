@@ -1,4 +1,4 @@
-import { User } from "../model/user.model.js";
+import { User } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -8,8 +8,8 @@ import {
 } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import {
-  registerUser,
-  loginUser,
+  registerUserSchema,
+  loginUserSchema,
   changePassword,
   updateAccountSchema,
 } from "../validations/user.validation.js";
@@ -37,7 +37,7 @@ const generateAccessRefreshTokens = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const result = registerUser.safeParse(req.body);
+  const result = registerUserSchema.safeParse(req.body);
   if (!result.success) {
     const errorMessage = result.error.errors[0].message;
     throw new ApiError(400, errorMessage);
@@ -78,7 +78,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const result = loginUser.safeParse(req.body);
+  const result = loginUserSchema.safeParse(req.body);
 
   if (!result.success) {
     const errorMessage = result.error.errors[0].message;
