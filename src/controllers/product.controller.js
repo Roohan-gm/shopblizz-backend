@@ -66,13 +66,13 @@ const addProduct = asyncHandler(async (req, res) => {
 });
 
 const removeProduct = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid product ID format");
   }
 
   const deletedProduct = await Product.findByIdAndUpdate(
-    productId,
+    id,
     {
       isDeleted: true,
       deletedAt: new Date(),
@@ -142,12 +142,12 @@ const updateProductImage = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed while uploading product image");
   }
 
-  const { productId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid product ID");
   }
 
-  const existingProduct = await Product.findById(productId);
+  const existingProduct = await Product.findById(id);
   if (!existingProduct) {
     throw new ApiError(404, "Product not found");
   }
@@ -157,7 +157,7 @@ const updateProductImage = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.findByIdAndUpdate(
-    productId,
+    id,
     {
       $set: {
         image: {
@@ -176,11 +176,11 @@ const updateProductImage = asyncHandler(async (req, res) => {
 });
 
 const getProduct = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid product ID");
   }
-  const product = await Product.findOne({ _id: productId, isDeleted: false });
+  const product = await Product.findOne({ _id: id, isDeleted: false });
   if (!product) {
     throw new ApiError(404, "Product not found");
   }
@@ -320,14 +320,14 @@ const getAllAvailableProducts = asyncHandler(async (req, res) => {
 });
 
 const toggleProductAvailability = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
+  const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid product ID");
   }
 
   const updateProduct = await Product.findByIdAndUpdate(
-    productId,
+    id,
     {
       $set: {
         isAvailable: { $not: "$isAvailable" },
@@ -361,14 +361,14 @@ const updateStock = asyncHandler(async (req, res) => {
   }
 
   const { stockQuantity } = result.data;
-  const { productId } = req.params;
+  const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid product ID");
   }
 
   const product = await Product.findByIdAndUpdate(
-    productId,
+    id,
     {
       $set: {
         stockQuantity,
