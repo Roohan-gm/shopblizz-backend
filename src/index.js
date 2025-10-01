@@ -24,6 +24,7 @@ connectToDatabase()
     app.listen(port, () => {
       console.log("Server is running on port: ", port);
     });
+    
     app.on("error", (error) => {
       console.error("Server error:", error);
       throw error;

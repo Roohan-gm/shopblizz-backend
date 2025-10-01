@@ -50,7 +50,9 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existingUser) {
     throw new ApiError(409, "User already exists with this username or email");
   }
+
   const localAvatarPath = req.file?.path;
+
   if (!localAvatarPath) {
     throw new ApiError(400, "Avatar image is required");
   }
@@ -66,15 +68,18 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     role,
     avatar: { url: avatar.url, public_id: avatar.public_id },
-  }).select("-password -refreshToken");
-
+  });
   if (!createUser) {
     throw new ApiError(500, "Failed to create new user.");
   }
 
+  const user = await User.findById(createUser._id).select(
+    "-password -refreshToken -createdAt -updatedAt -__v"
+  );
+
   return res
     .status(201)
-    .json(new ApiResponse(201, createUser, "User created successfully"));
+    .json(new ApiResponse(201, user, "User created successfully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -105,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   const loginUser = await User.findById(userExists._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken -createdAt -updatedAt -__v"
   );
 
   return res
@@ -217,7 +222,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     const errorMessage = result.error.errors[0].message;
     throw new ApiError(400, errorMessage);
   }
-  
+
   const { username, email, role } = result.data;
 
   const updatedUser = await User.findByIdAndUpdate(
