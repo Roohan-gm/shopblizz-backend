@@ -39,7 +39,7 @@ const generateAccessRefreshTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
   const result = registerUserSchema.safeParse(req.body);
   if (!result.success) {
-    const errorMessage = result.error.errors[0].message;
+    const errorMessage = result.error?.errors?.[0]?.message || "Invalid input";
     throw new ApiError(400, errorMessage);
   }
 
@@ -86,7 +86,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const result = loginUserSchema.safeParse(req.body);
 
   if (!result.success) {
-    const errorMessage = result.error.errors[0].message;
+    const errorMessage = result.error?.errors?.[0]?.message || "Invalid input";
     throw new ApiError(400, errorMessage);
   }
 
@@ -188,7 +188,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   const result = changePassword.safeParse(req.body);
 
   if (!result.success) {
-    const errorMessage = result.error.errors[0].message;
+    const errorMessage = result.error?.errors?.[0]?.message || "Invalid input";
     throw new ApiError(400, errorMessage);
   }
 
@@ -219,7 +219,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   const result = updateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
-    const errorMessage = result.error.errors[0].message;
+    const errorMessage = result.error?.errors?.[0]?.message || "Invalid input";
     throw new ApiError(400, errorMessage);
   }
 

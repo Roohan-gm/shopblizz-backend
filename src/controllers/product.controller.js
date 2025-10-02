@@ -15,9 +15,18 @@ import {
 import { getPaginatedProducts } from "../utils/pagination.js";
 
 const addProduct = asyncHandler(async (req, res) => {
-  const result = addProductSchema.safeParse(req.body);
+  // Convert string numbers to actual numbers
+  const body = { ...req.body };
+  if (typeof body.price === "string") {
+    body.price = parseFloat(body.price);
+  }
+  if (typeof body.stockQuantity === "string") {
+    body.stockQuantity = parseInt(body.stockQuantity, 10);
+  }
+
+  const result = addProductSchema.safeParse(body);
   if (!result.success) {
-    const errorMessage = result.error.errors[0].message;
+    const errorMessage = result.error?.errors?.[0]?.message || "Invalid input";
     throw new ApiError(400, errorMessage);
   }
 
@@ -328,13 +337,16 @@ const toggleProductAvailability = asyncHandler(async (req, res) => {
 
   const updateProduct = await Product.findByIdAndUpdate(
     id,
-    {
-      $set: {
-        isAvailable: { $not: "$isAvailable" },
+    [
+      {
+        $set: {
+          isAvailable: { $not: "$isAvailable" },
+        },
       },
-    },
+    ],
     {
       new: true,
+      runValidators: true,
     }
   ).select("isAvailable productName");
   if (!updateProduct) {
@@ -408,12 +420,12 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 });
 
 const restoreDeletedProducts = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid product ID");
   }
   const restored = await Product.findByIdAndUpdate(
-    { _id: productId, isDeleted: true },
+    { _id: id, isDeleted: true },
     {
       isDeleted: false,
       deletedAt: null,

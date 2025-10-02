@@ -71,6 +71,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 
 const getOrdersByCustomer = asyncHandler(async (req, res) => {
   const { fullName, email } = req.query;
+  console.log("Req: ", req.query);
   if (!fullName && !email) {
     throw new ApiError(
       400,

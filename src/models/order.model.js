@@ -33,7 +33,6 @@ const orderSchema = new Schema(
     orderNo: {
       type: String,
       unique: true,
-      required: true,
     },
     status: {
       type: String,
@@ -85,7 +84,6 @@ const orderSchema = new Schema(
     },
     totalAmount: {
       type: Number,
-      required: true,
       min: 0,
     },
     // Optional tracking & delivery info
@@ -100,7 +98,6 @@ const orderSchema = new Schema(
     },
     shippingCost: {
       type: Number,
-      required: true,
       min: 0,
     },
     deliveredAt: {

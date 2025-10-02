@@ -12,9 +12,7 @@ import {
 
 const router = Router();
 
-// Public routes (no authentication required)
-router.route("/").post(createOrder);
-router.route("/:id").get(getOrderById);
+
 
 
 // Admin routes (require authentication)
@@ -23,6 +21,9 @@ router.route("/").get(verifyJWT, verifyAdmin, getAllOrders);
 router.route("/:id/status").patch(verifyJWT, verifyAdmin, updateOrderStatus);
 router.route("/status").get(verifyJWT, verifyAdmin, getOrdersByStatus);
 
+// Public routes (no authentication required)
+router.route("/").post(createOrder);
+router.route("/:id").get(getOrderById);
 // Cancel order - this can be done by both customer AND admin
 // So we only need verifyJWT, not verifyAdmin
 router.route("/:id/cancel").post(verifyJWT, cancelOrder);

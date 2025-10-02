@@ -26,20 +26,10 @@ router.route("/:id").get(getProduct);
 //admin routes
 router
   .route("/")
-  .post(
-    verifyJWT,
-    verifyAdmin,
-    upload.fields([{ name: "image", maxCount: 1 }]),
-    addProduct
-  );
+  .post(verifyJWT, verifyAdmin, upload.single("image"), addProduct);
 router
   .route("/:id/image")
-  .patch(
-    verifyJWT,
-    verifyAdmin,
-    upload.fields([{ name: "image", maxCount: 1 }]),
-    updateProductImage
-  );
+  .patch(verifyJWT, verifyAdmin, upload.single("image"), updateProductImage);
 router
   .route("/:id/toggle-availability")
   .patch(verifyJWT, verifyAdmin, toggleProductAvailability);
