@@ -11,7 +11,7 @@ const orderItemSchema = z.object({
 export const createOrderSchema = z.object({
   fullName: z.string().min(1, "Full name is required.").max(2000),
   email: z.email("Invalid email format."),
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format."),
+  phone: z.string().regex(/^\+92\d{10,12}$/, "Phone must be in +923001234567 format"),
   address: z.string().min(1, "Address is required.").max(2000),
   shippingMethod: z.enum(allowedShippingMethod, {
     required_error: "Shipping method is required",

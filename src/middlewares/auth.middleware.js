@@ -21,6 +21,7 @@ const verifyJWT = async (req, res, next) => {
     }
 
     req.user = user;
+    console.log("✅ Authenticated user:", req.user?.role); 
     next();
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid access token.");

@@ -34,6 +34,8 @@ const createOrder = asyncHandler(async (req, res) => {
       });
       break;
     } catch (error) {
+      console.error("Order creation error:", error);
+      
       if (error.code === 11000 && error.keyPattern?.orderNo) {
         attempts++;
         continue;

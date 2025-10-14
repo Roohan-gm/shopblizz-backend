@@ -6,6 +6,7 @@ import {
   getAllAvailableProducts,
   getAllProducts,
   getAllProductsWithAdminAccess,
+  getCategories,
   getProduct,
   getProductsByCategory,
   removeProduct,
@@ -21,15 +22,16 @@ const router = Router();
 router.route("/").get(getAllAvailableProducts);
 router.route("/all").get(getAllProducts);
 router.route("/category/:category").get(getProductsByCategory);
+router.route("/categories").get(getCategories);
 router.route("/:id").get(getProduct);
 
 //admin routes
 router
   .route("/")
-  .post(verifyJWT, verifyAdmin, upload.single("image"), addProduct);
+  .post(verifyJWT, verifyAdmin, upload.single("images"), addProduct);
 router
   .route("/:id/image")
-  .patch(verifyJWT, verifyAdmin, upload.single("image"), updateProductImage);
+  .patch(verifyJWT, verifyAdmin, upload.single("images"), updateProductImage);
 router
   .route("/:id/toggle-availability")
   .patch(verifyJWT, verifyAdmin, toggleProductAvailability);

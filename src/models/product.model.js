@@ -30,20 +30,22 @@ const productSchema = new Schema(
       required: [true, "Product category is required"],
       lowercase: true,
     },
-    image: {
-      url: {
-        type: String,
-        required: [true, "Product image URL is required"],
-        validate: {
-          validator: (v) => /^https?:\/\/.+/.test(v),
-          message: "Image must be a valid URL",
+    images: [
+      {
+        url: {
+          type: String,
+          required: [true, "Product image URL is required"],
+          validate: {
+            validator: (v) => /^https?:\/\/.+/.test(v),
+            message: "Image must be a valid URL",
+          },
+        },
+        public_id: {
+          type: String,
+          required: [true, "Cloudinary public ID is required"],
         },
       },
-      public_id: {
-        type: String,
-        required: [true, "Cloudinary public ID is required"],
-      },
-    },
+    ],
     price: {
       type: Number,
       required: [true, "Product price is required"],

@@ -57,7 +57,7 @@ const orderSchema = new Schema(
       type: String,
       required: [true, "Phone number is required"],
       trim: true,
-      match: [/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"],
+      match: [/^\+92\d{10,12}$/, "Phone must be in +923001234567 format"],
     },
     address: {
       type: String,
@@ -89,7 +89,7 @@ const orderSchema = new Schema(
     // Optional tracking & delivery info
     trackingCode: {
       type: String,
-      trim: true,
+      trim: true, 
     },
     shippingMethod: {
       type: String,

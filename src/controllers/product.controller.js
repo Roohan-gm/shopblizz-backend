@@ -61,7 +61,7 @@ const addProduct = asyncHandler(async (req, res) => {
     category: category,
     price,
     stockQuantity,
-    image: { url: productImage.url, public_id: productImage.public_id },
+    images: [{ url: productImage.url, public_id: productImage.public_id }],
     isAvailable: true,
   });
 
@@ -169,10 +169,12 @@ const updateProductImage = asyncHandler(async (req, res) => {
     id,
     {
       $set: {
-        image: {
-          url: newProductImage.url,
-          public_id: newProductImage.public_id,
-        },
+        images: [
+          {
+            url: newProductImage.url,
+            public_id: newProductImage.public_id,
+          },
+        ],
       },
     },
     {
@@ -406,6 +408,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   const products = await Product.find({
     category: category.trim().toLowerCase(),
     isDeleted: false,
+    isAvailable: true,
   });
 
   return res
@@ -415,6 +418,21 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
         200,
         products,
         "Products in the category fetched successfully"
+      )
+    );
+});
+const getCategories = asyncHandler(async (req, res) => {
+  const categories = await Product.distinct("category", {
+    isDeleted: false,
+    isAvailable: true,
+  });
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        categories,
+        "Product categories fetched successfully"
       )
     );
 });
@@ -453,4 +471,5 @@ export {
   restoreDeletedProducts,
   getAllAvailableProducts,
   getAllProductsWithAdminAccess,
+  getCategories,
 };
