@@ -25,19 +25,17 @@ ShopBlizz Backend is a Node.js REST API for an e-commerce web application, provi
 
 ## Getting Started
 
-1. **Clone the repository**
-2. **Install dependencies**
-
+1. Clone the repository.
+2. Install dependencies:
    ```sh
    npm install
-```
-
-Configure environment variables
-Copy .env.sample to .env and fill in your credentials.
-Run the development server
-```Bash
-npm run dev
-```
+   ```
+3. Configure environment variables:
+   - Copy `.env.sample` to `.env` and fill in your credentials.
+4. Run the development server:
+   ```sh
+   npm run dev
+   ```
 
 ## API Endpoints
 
