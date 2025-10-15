@@ -27,9 +27,6 @@ connectToDatabase()
 
     app.listen(port, () => {
       console.log("Server is running on port: ", port);
-      console.log(
-        `Admin available at http://localhost:${port}${admin.options.rootPath}`
-      );
     });
 
     app.on("error", (error) => {
