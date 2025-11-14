@@ -4,6 +4,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { createOrderSchema } from "../validations/order.validation.js";
 import mongoose from "mongoose";
+import { sendNewOrderNotificationToManager, sendOrderConfirmationEmail } from "../utils/email.js";
 
 const createOrder = asyncHandler(async (req, res) => {
   const result = createOrderSchema.safeParse(req.body);
@@ -35,7 +36,7 @@ const createOrder = asyncHandler(async (req, res) => {
       break;
     } catch (error) {
       console.error("Order creation error:", error);
-      
+
       if (error.code === 11000 && error.keyPattern?.orderNo) {
         attempts++;
         continue;
@@ -53,6 +54,12 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   const populateOrder = await Order.populateOrderById(saveOrder._id);
+
+  // Send email (fire-and-forget)
+  sendOrderConfirmationEmail(populateOrder).catch(console.error);
+
+  sendNewOrderNotificationToManager(populateOrder).catch(console.error);
+  
   res
     .status(201)
     .json(new ApiResponse(201, populateOrder, "Order created successfully."));

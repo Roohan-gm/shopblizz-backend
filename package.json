@@ -17,6 +17,7 @@
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2"
   },
@@ -34,6 +35,7 @@
     "mongoose": "^8.18.2",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.10",
     "zod": "^4.1.11"
   }
 }
